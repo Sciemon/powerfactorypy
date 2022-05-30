@@ -6,6 +6,7 @@ from os import path as os_path
 from os import remove
 import collections 
 
+
 class PowerFactoryInterface:
 
   def __init__(self,app, export_path=""):  
@@ -179,7 +180,7 @@ class PowerFactoryInterface:
           if child.GetClassName() == "PltLinebarplot":
             data_series =child.GetDataSeries()
             data_series.ClearCurves()
-                
+          
   def export_to_csv(self):
     """
     Exports the simulation results in self.results to csv.
