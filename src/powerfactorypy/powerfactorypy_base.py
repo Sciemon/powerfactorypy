@@ -33,6 +33,36 @@ class PowerFactoryInterface:
       folder_obj = folder_obj[0].GetContents(folder_name + '.*')
     return folder_obj[0]
 
+  def set_param(self,obj,params):
+    """
+    obj: PowerFactory object or its path.
+    params: dictionary {parameter:value,..}.
+    """
+    obj = self.return_obj_if_string_path_is_specified(obj)
+    for param, value in params.items():
+      obj.SetAttribute(param,value)
+
+  def set_param_by_path(self,param_path,values):
+    """
+    param_path: path of object plus the parameter/attribute name
+      - example: *ToDo
+    values: list of values
+      * ToDo: does the list make sense? 
+    """
+    head_tail = os_path.split(param_path)
+    obj = self.get_obj(head_tail[0])
+    if not isinstance(values, collections.abc.Iterable):
+      values =  [values]
+    for value in values:
+      obj.SetAttribute(head_tail[1],value)
+
+  def create(self,path):
+    print("test4")
+    folder_path, file_name_incl_class = path.rsplit('\\',1)
+    folder = self.get_obj(folder_path)
+    file_name, class_name = file_name_incl_class.split('.')
+    return folder.CreateObject(class_name, file_name)
+
   def activate_study_case(self, path):
     if not path.startswith("Study Cases\\"):
       path = "Study Cases\\" + path
@@ -62,29 +92,6 @@ class PowerFactoryInterface:
       return obj  
     else:
       return self.get_obj(obj)
-
-  def set_param(self,obj,params):
-    """
-    obj: PowerFactory object or its path.
-    params: dictionary {parameter:value,..}.
-    """
-    obj = self.return_obj_if_string_path_is_specified(obj)
-    for param, value in params.items():
-      obj.SetAttribute(param,value)
-
-  def set_param_by_path(self,param_path,values):
-    """
-    param_path: path of object plus the parameter/attribute name
-      - example: *ToDo
-    values: list of values
-      * ToDo: does the list make sense? 
-    """
-    head_tail = os_path.split(param_path)
-    obj = self.get_obj(head_tail[0])
-    if not isinstance(values, collections.abc.Iterable):
-      values =  [values]
-    for value in values:
-      obj.SetAttribute(head_tail[1],value)
 
   def add_results_variable(self,obj,variables):
     """
