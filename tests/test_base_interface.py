@@ -3,7 +3,6 @@ import sys
 sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2022 SP1\Python\3.10')
 import powerfactory
 sys.path.append(r'.\src')
-#sys.path.append(r'.\src\powerfactorypy')
 import powerfactorypy 
 
 
