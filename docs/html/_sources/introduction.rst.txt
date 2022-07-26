@@ -16,7 +16,7 @@ native API. With the API of *powfacpy*, this is only one line:
 
 Here, we have set two attributes (uknom, outserv) of the object specified under the path "Network Mod...".
 
-Plotting also requires many lines with the native API (add the variable to the monitored variables, create a 
+Plotting also requires many lines with the native API (to add the variable to the monitored variables, create a 
 plot page, add the curve,..). However, using *powfacpy* the syntax is succinct and similar to matplotlib. Just activate 
 a plot and then plot variables of an object:
 

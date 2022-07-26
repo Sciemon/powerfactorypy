@@ -236,7 +236,7 @@ class PFBaseInterface:
       objects_or_folder_to_be_copied = self.get_from_folder(objects_or_folder_to_be_copied)
     # If the content of a container object should be copied 
     elif (not isinstance(objects_or_folder_to_be_copied,list) and 
-      True):
+      self.is_container(objects_or_folder_to_be_copied)):
       objects_or_folder_to_be_copied = self.get_from_folder(objects_or_folder_to_be_copied)
     target_folder = self.return_obj_if_path_is_provided(target_folder)
     if overwrite:

@@ -2,7 +2,7 @@ import pytest
 import sys
 sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2022 SP1\Python\3.10')
 import powerfactory
-sys.path.append(r'.\src')
+sys.path.insert(0,r'.\src')
 import powerfactorypy 
 import importlib
 importlib.reload(powerfactorypy)
