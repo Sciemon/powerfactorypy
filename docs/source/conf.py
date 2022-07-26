@@ -35,5 +35,5 @@ html_context = {
   'display_github': True,
   'github_user': 'Sciemon',
   'github_repo': 'powerfactorypy',
-  'github_version': 'main/docs/source',
+  'github_version': 'main/docs/source/',
 }
