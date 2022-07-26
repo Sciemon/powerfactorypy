@@ -3,8 +3,8 @@ sys.path.append(r".\src")
 import powerfactorypy
 
 class PFInterfaceError(Exception):
-  """There should always be a base class for all custom 
-  Errors/exceptions.
+  """There should always be a base class (that inherits
+  from 'Exception') for all custom errors/exceptions.
   """
   pass
 
@@ -18,7 +18,7 @@ class PFAttributeError(PFInterfaceError):
     super().__init__(self.message)
 
 class PFAttributeTypeError(PFInterfaceError):
-  """Attempt to set an invalid type of a PF object attribute.
+  """Attempt to set an invalid type for the attribute of a PF object.
   """
   def __init__(self,obj,attr,msg_raised,pf_base_interface):
     object_str = powerfactorypy.PFStringManipuilation.format_full_path(str(obj),pf_base_interface)

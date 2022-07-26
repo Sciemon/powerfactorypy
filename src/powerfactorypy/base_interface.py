@@ -1,27 +1,30 @@
 import sys
-sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2022 SP1\Python\3.10')
-import powerfactory as pf
+#sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2022 SP1\Python\3.10')
+#import powerfactory as pf
 sys.path.append(r".\src")
 import powerfactorypy
 from os import path as os_path
 import math
 
+# ToDo: get_active_networks, copy_graphics_pages
 
 class PFBaseInterface:
+  """Base interface for data manipulation
+  """
 
-  def __init__(self,app, export_path=""):  
+  def __init__(self,app):  
     
     self.app = app
-    self.export_path = export_path
+    self.export_path = ""
     self.csv_export_file_name = "SimulationResults.csv"    
     self.results = "All calculations.ElmRes"
     self.project_language = "English" 
 
-  def get_obj(self,path,project_folder=None):
+  def get_obj(self,path,project_folder=None,error_if_non_existent=True):
     """
     Returns the PowerFactory object under path in the project folder.
     The path must be specified relative to the project folder.
-    If argument 'project_folder' is not specified, the path is
+    If argument `project_folder` is not specified, the path is
     searched within the currently active project.
     ToDo: Does specifying a project folder object enhance performance? 
 
@@ -30,8 +33,9 @@ class PFBaseInterface:
     The path can also start with "\\":
       get_obj("\\Network Model\\Network Data\\Grid\\Terminal 1")
     Note that you can also use r" at the beginning of the string
-    argument and the use single "\".   
+    argument to use single "\".   
     """
+
     try:
       if path[0] == "\\":
         path = path[1:] 
@@ -48,7 +52,10 @@ class PFBaseInterface:
         folder_obj = folder_obj[0].GetContents(folder_name + '.*')
       return folder_obj[0]
     except(IndexError):
-      raise powerfactorypy.PFPathError(path,project_folder)
+      if error_if_non_existent:
+        raise powerfactorypy.PFPathError(path,project_folder)
+      else:
+        return None
 
   def get_by_attribute(self,objects,attr,attr_lambda):
     """From a list of objects, get those for whom the the attr_lambda
@@ -74,11 +81,11 @@ class PFBaseInterface:
     Arguments:
       folder: Path to folder or folder object
       obj_name: Name of the object(s), can contain wildcards ('*'). 
-        if not specified, all objects are returned.
+        If not specified, all objects are returned.
       attr: Name of attribute.
       attr_lambda: Lambda function with condition for the attribute.
         Example: attr_lambda = lambda x : x>110
-        This checks of the value of attr is larger than 110.
+        This checks if the value of attr is larger than 110.
     """
     folder = self.return_obj_if_path_is_provided(folder)
     int_subfolders = 0 if not include_subfolders else 1
@@ -96,8 +103,7 @@ class PFBaseInterface:
     return objects
 
   # ToDo functions get_from_global_library(path) and
-  # get_from_another_project(path,project_folder) -> actually this can be handled in get_obj but may complicate the code
-
+  
   def get_path_of_object(self,obj):
     return PFStringManipuilation.format_full_path(str(obj))
 
@@ -144,7 +150,7 @@ class PFBaseInterface:
     Example:
       pfbi.set_attr_by_path(self,
         "Library\\Dynamic Models\\Linear_interpolation\\desc",["description"])
-      Note that 'desc' is the attribute name.  
+      Here 'desc' is the name of the attribute.  
     """
     head_tail = os_path.split(path_with_attr)
     self.set_attr(head_tail[0],{head_tail[1]:value})
@@ -228,6 +234,10 @@ class PFBaseInterface:
     """
     if isinstance(objects_or_folder_to_be_copied,str):
       objects_or_folder_to_be_copied = self.get_from_folder(objects_or_folder_to_be_copied)
+    # If the content of a container object should be copied 
+    elif (not isinstance(objects_or_folder_to_be_copied,list) and 
+      True):
+      objects_or_folder_to_be_copied = self.get_from_folder(objects_or_folder_to_be_copied)
     target_folder = self.return_obj_if_path_is_provided(target_folder)
     if overwrite:
       for obj in objects_or_folder_to_be_copied:
@@ -235,6 +245,13 @@ class PFBaseInterface:
         if obj_to_delete_list:
           obj_to_delete_list[0].Delete()
     return target_folder.AddCopy(objects_or_folder_to_be_copied)
+
+  def is_container(self,obj):
+    """Checks whether a PF object is a container. It is assumed
+    that an object is a container if it has the attribute "contents.
+    """
+    obj = self.return_obj_if_path_is_provided(obj)
+    return obj.HasAttribute("contents")
 
   def return_obj_if_path_is_provided(self,obj):
     """Returns obj if obj is not a string. 
@@ -274,7 +291,7 @@ class PFStringManipuilation:
   @staticmethod
   def format_full_path(path,pf_base_interface):
     """
-    Takes the full path (including user and project)and returns the path 
+    Takes the full path (including user and project) and returns the path 
     relative to the currently active project.
     Example:
       input path:  \\username.IntUser\\powerfactorypy_base.IntPrj\\Network Model.IntPrjfolder\\Network Data.IntPrjfolder\\Grid.ElmNet\\Terminal 1.ElmTerm
@@ -283,7 +300,6 @@ class PFStringManipuilation:
     project_name = pf_base_interface.app.GetActiveProject().loc_name + '.IntPrj\\'
     path = path[path.find(project_name)+len(project_name):]
     return PFStringManipuilation.delete_classes(path)
-
 
 def replace_in_string(string,translation):
   for old_string,replacement in translation.items():

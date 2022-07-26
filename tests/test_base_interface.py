@@ -4,7 +4,8 @@ sys.path.append(r'C:\Program Files\DIgSILENT\PowerFactory 2022 SP1\Python\3.10')
 import powerfactory
 sys.path.append(r'.\src')
 import powerfactorypy 
-
+import importlib
+importlib.reload(powerfactorypy)
 
 @pytest.fixture(scope='session')
 def pf_app():
@@ -20,7 +21,7 @@ def activate_test_project(pfbi):
     pfbi.app.ActivateProject(r"\seberlein\powerfactorypy_base")
 
 def test_get_obj(pfbi,activate_test_project):
-    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal MV 1")
+    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal HV 1")
     assert isinstance(terminal_1,powerfactory.DataObject)
     with pytest.raises(powerfactorypy.PFPathError):
         terminal_1 = pfbi.get_obj(r"Stretchwork Model\Stretchwork Data\Grid\Termalamala")
@@ -31,7 +32,7 @@ def test_get_obj(pfbi,activate_test_project):
 
 def test_get_obj_with_project_folder_argument(pfbi,activate_test_project):
     project_folder = pfbi.app.GetActiveProject()
-    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal MV 1",project_folder)
+    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal HV 1",project_folder)
     assert isinstance(terminal_1,powerfactory.DataObject)
 
 def test_set_attr(pfbi,activate_test_project):
@@ -60,7 +61,7 @@ def test_set_attr_by_path(pfbi,activate_test_project):
 
 
 def test_get_attr(pfbi,activate_test_project):
-    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal MV 1")
+    terminal_1 = pfbi.get_obj(r"Network Model\Network Data\Grid\Terminal HV 1")
     systype = pfbi.get_attr(terminal_1,"systype")
     assert systype == 0
     with pytest.raises(powerfactorypy.exceptions.PFAttributeError):
@@ -150,10 +151,13 @@ def test_copy_multiple_objects(pfbi,activate_test_project):
     pfbi.copy_multiple_objects(folder_copy_from,folder_copy_to)
 
     pfbi.delete_obj_from_folder(folder_copy_to,"*",error_when_nonexistent=False)
+    folder_copy_from = pfbi.get_obj(r"Library\Dynamic Models\TestDummyFolder")
+    folder_copy_to = pfbi.get_obj(r"Library\Dynamic Models\TestCopyMultiple")
+    pfbi.copy_multiple_objects(folder_copy_from,folder_copy_to)
+
+    pfbi.delete_obj_from_folder(folder_copy_to,"*",error_when_nonexistent=False)
     objects_to_copy = pfbi.get_from_folder(folder_copy_from)
     pfbi.copy_multiple_objects(objects_to_copy,folder_copy_to)
-
-
 
 if __name__ == "__main__":
     pytest.main()
