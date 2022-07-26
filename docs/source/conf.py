@@ -33,7 +33,7 @@ html_static_path = ['_static']
 
 html_context = {
   'display_github': True,
-  'github_user': 'buskill',
-  'github_repo': 'buskill-app',
-  'github_version': 'master/docs/',
+  'github_user': 'Sciemon',
+  'github_repo': 'powerfactorypy',
+  'github_version': 'main/docs/',
 }
