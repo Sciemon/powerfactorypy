@@ -30,3 +30,10 @@ exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+html_context = {
+  'display_github': True,
+  'github_user': 'buskill',
+  'github_repo': 'buskill-app',
+  'github_version': 'master/docs/',
+}
